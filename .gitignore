@@ -1,0 +1,11 @@
+# node module
+node_modules
+
+# flow charts
+Flow-charts
+
+# parcel cache
+.parcel-cache
+
+# dist
+dist
