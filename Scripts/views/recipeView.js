@@ -4,6 +4,7 @@ import { clearContainer, insertHTML } from '../helpers.js';
 
 class RecipeView {
    #parentEl = document.querySelector('.recipe');
+   #errorMessage = 'We could not find that recipe, Please try again.';
    #data;
    // store data and call createMarkap function
    render(data) {
@@ -11,6 +12,27 @@ class RecipeView {
       const recipeStrEl = this.#createMarkap(this.#data);
       clearContainer(this.#parentEl);
       insertHTML(this.#parentEl, recipeStrEl);
+   }
+   // add handler event method
+   addHandlerEvent(showRecipes) {
+      ['load', 'hashchange'].forEach(typeEevent =>
+         window.addEventListener(typeEevent, showRecipes)
+      );
+   }
+   // render error method
+   renderError() {
+      const markup = `
+         <div class="error">
+            <div>
+               <svg>
+                  <use href="src/img/${icon}#icon-alert-triangle"></use>
+               </svg>
+            </div>
+            <p>${this.#errorMessage}</p>
+         </div>
+      `;
+      clearContainer(this.#parentEl);
+      insertHTML(this.#parentEl, markup);
    }
    // create recipe element
    #createMarkap(recipe) {
