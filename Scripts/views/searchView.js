@@ -1,6 +1,7 @@
 import { controllSearchView, state } from '../model.js';
 import icon from 'url:../../Images/icons.svg';
 import View from './View.js';
+import { resultPerPage } from '../config.js';
 
 class searchView extends View {
   #searchField = document.querySelector('.search__field');
@@ -27,14 +28,23 @@ class searchView extends View {
         e.preventDefault();
         this._renderSpinner();
         const data = await controllSearchView(this._getQuery());
-        if (!data.results) throw new Error('Not found!');
+        if (!data[0]) throw new Error('Not found!');
         this._clearInput();
         this._clearContainer();
-        this._render(state.search.result);
+        this._render(data);
       } catch (err) {
-        this._renderError();
+        console.error(err);
+        // this._renderError();
       }
     });
+  }
+
+  // get result per page
+  _getResultPage(page = 1) {
+    const allResult = state.search.result,
+      start = (page - 1) * resultPerPage,
+      end = page * resultPerPage;
+    return allResult.slice(start, end);
   }
 
   // render search result
@@ -42,7 +52,7 @@ class searchView extends View {
     results.map(result => {
       const { title, publisher, image_url: image, id } = result;
       const markup = `
-         <li class="preview preview__link--active">
+         <li class="preview">
             <a class="preview__link" href="#${id}">
             <figure class="preview__fig">
                <img src="${image}" alt="${title}" />

@@ -1,5 +1,6 @@
 import { apiURL } from './config.js';
 import { getJson } from './helpers.js';
+import paginationView from './views/paginationView.js';
 import searchView from './views/searchView.js';
 
 // App state
@@ -42,12 +43,14 @@ export async function controllSearchView(query) {
     const data = await getJson(`${apiURL}/?search=${query}`);
     // update search object
     state.search.result = data.data.recipes;
-    return data;
+    // pagination render
+    paginationView._checkStatePage();
+    // return result per page
+    return searchView._getResultPage(1);
   } catch (err) {
     throw err;
   }
 }
-
 // class View {
 //   #errorMessage;
 //   #parent;
