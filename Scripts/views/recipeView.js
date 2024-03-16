@@ -1,52 +1,50 @@
 import icon from 'url:../../Images/icons.svg';
 import { Fraction } from 'fractional';
-import { clearContainer, insertHTML } from '../helpers.js';
+import View from './View.js';
 
-class RecipeView {
-   #parentEl = document.querySelector('.recipe');
-   #errorMessage = 'We could not find that recipe, Please try again.';
-   #data;
-   // store data and call createMarkap function
-   render(data) {
-      this.#data = data;
-      const recipeStrEl = this.#createMarkap(this.#data);
-      clearContainer(this.#parentEl);
-      insertHTML(this.#parentEl, recipeStrEl);
-   }
-   // add handler event method
-   addHandlerEvent(showRecipes) {
-      ['load', 'hashchange'].forEach(typeEevent =>
-         window.addEventListener(typeEevent, showRecipes)
-      );
-   }
-   // render error method
-   renderError() {
-      const markup = `
+class RecipeView extends View {
+  #data;
+
+  constructor(parentEl, errorMessage) {
+    super(parentEl, errorMessage);
+  }
+
+  //   store data and call createMarkap function
+  _render(data) {
+    this.#data = data;
+    const recipeStrEl = this._createMarkap(this.#data);
+    this._clearContainer();
+    this._insertHTML(recipeStrEl);
+  }
+
+  // add handler event method
+  _addHandlerEvent(showRecipes) {
+    ['load', 'hashchange'].forEach(typeEevent =>
+      window.addEventListener(typeEevent, showRecipes)
+    );
+  }
+
+  // render error method
+  _renderError() {
+    const markup = `
          <div class="error">
             <div>
                <svg>
                   <use href="src/img/${icon}#icon-alert-triangle"></use>
                </svg>
             </div>
-            <p>${this.#errorMessage}</p>
+            <p>${this._getErrorMessage()}</p>
          </div>
-      `;
-      clearContainer(this.#parentEl);
-      insertHTML(this.#parentEl, markup);
-   }
-   // create recipe element
-   #createMarkap(recipe) {
-      const {
-         title,
-         sourceUrl,
-         servings,
-         publisher,
-         ingredients,
-         image,
-         id,
-         cookingTime,
-      } = recipe;
-      return `
+   `;
+    this._clearContainer();
+    this._insertHTML(markup);
+  }
+
+  // create recipe element
+  _createMarkap(recipe) {
+    // prettier-ignore
+    const { title, sourceUrl, servings, publisher, ingredients, image, id, cookingTime } = recipe;
+    return `
        <figure class="recipe__fig">
           <img src="${image}" alt="${title}" class="recipe__img" />
           <h1 class="recipe__title">
@@ -94,7 +92,7 @@ class RecipeView {
        <div class="recipe__ingredients">
           <h2 class="heading--2">Recipe ingredients</h2>
           <ul class="recipe__ingredient-list">
-          ${ingredients.map(this.#createMarkupIngredient).join('')}
+          ${ingredients.map(this._createMarkupIngredient).join('')}
                   </ul>
                   </div>
                   <div class="recipe__directions">
@@ -116,17 +114,17 @@ class RecipeView {
           </a>
        </div>
     `;
-   }
-   // create markup ingredient
-   #createMarkupIngredient(ingredient) {
-      const { unit, quantity, description } = ingredient;
-      return `
+  }
+  // create markup ingredient
+  _createMarkupIngredient(ingredient) {
+    const { unit, quantity, description } = ingredient;
+    return `
          <li class="recipe__ingredient">
             <svg class="recipe__icon">
             <use href="${icon}#icon-check"></use>
             </svg>
             <div class="recipe__quantity">${
-               quantity ? new Fraction(quantity) : ''
+              quantity ? new Fraction(quantity) : ''
             }</div>
             <div class="recipe__description">
             <span class="recipe__unit">${unit}</span>
@@ -134,7 +132,10 @@ class RecipeView {
             </div>
          </li>
       `;
-   }
+  }
 }
 
-export default new RecipeView();
+export default new RecipeView(
+  document.querySelector('.recipe'), // parentEl
+  'We could not find that recipe, Please try again.' // errorMessage
+);
