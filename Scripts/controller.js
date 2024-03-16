@@ -22,7 +22,7 @@ async function showRecipes() {
     // render recipe
     recipeView._render(model.state.recipe);
   } catch (err) {
-    //  recipeView._renderError();
+    recipeView._renderError();
     console.error(err);
   }
 }

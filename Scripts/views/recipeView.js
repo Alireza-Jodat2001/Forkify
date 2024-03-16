@@ -9,7 +9,7 @@ class RecipeView extends View {
     super(parentEl, errorMessage);
   }
 
-  //   store data and call createMarkap function
+  // store data and call createMarkap function
   _render(data) {
     this.#data = data;
     const recipeStrEl = this._createMarkap(this.#data);
@@ -30,7 +30,7 @@ class RecipeView extends View {
          <div class="error">
             <div>
                <svg>
-                  <use href="src/img/${icon}#icon-alert-triangle"></use>
+                  <use href="${icon}#icon-alert-triangle"></use>
                </svg>
             </div>
             <p>${this._getErrorMessage()}</p>
@@ -79,9 +79,6 @@ class RecipeView extends View {
           </div>
           </div>
           <div class="recipe__user-generated">
-          <svg>
-             <use href="${icon}#icon-user"></use>
-          </svg>
           </div>
           <button class="btn--round">
           <svg class="">
@@ -115,6 +112,7 @@ class RecipeView extends View {
        </div>
     `;
   }
+
   // create markup ingredient
   _createMarkupIngredient(ingredient) {
     const { unit, quantity, description } = ingredient;

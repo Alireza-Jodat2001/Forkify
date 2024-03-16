@@ -1,5 +1,6 @@
 import { apiURL } from './config.js';
 import { getJson } from './helpers.js';
+import searchView from './views/searchView.js';
 
 // App state
 export const state = {
@@ -41,9 +42,9 @@ export async function controllSearchView(query) {
     const data = await getJson(`${apiURL}/?search=${query}`);
     // update search object
     state.search.result = data.data.recipes;
+    return data;
   } catch (err) {
-    //  throw err;
-    console.error(err);
+    throw err;
   }
 }
 
