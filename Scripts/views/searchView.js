@@ -29,8 +29,6 @@ class searchView extends View {
         this._renderSpinner();
         const data = await controllSearchView(this._getQuery());
         if (!data[0]) throw new Error('Not found!');
-        this._clearInput();
-        this._clearContainer();
         this._render(data);
       } catch (err) {
         console.error(err);
@@ -49,6 +47,8 @@ class searchView extends View {
 
   // render search result
   _render(results) {
+    this._clearInput();
+    this._clearContainer();
     results.map(result => {
       const { title, publisher, image_url: image, id } = result;
       const markup = `
@@ -79,7 +79,7 @@ class searchView extends View {
            </div>
            <p>${this._getErrorMessage()}</p>
         </div>
-   `;
+    `;
     this._clearContainer();
     this._insertHTML(markup);
   }

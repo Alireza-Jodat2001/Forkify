@@ -1,7 +1,8 @@
-import { apiURL } from './config.js';
+import { apiURL, resultPerPage } from './config.js';
 import { getJson } from './helpers.js';
 import paginationView from './views/paginationView.js';
 import searchView from './views/searchView.js';
+import icon from 'url:../Images/icons.svg';
 
 // App state
 export const state = {
@@ -9,6 +10,7 @@ export const state = {
   search: {
     query: '',
     result: [],
+    currPage: 1,
   },
 };
 
@@ -38,57 +40,18 @@ export async function sendRequest(id) {
 // controll search view function
 export async function controllSearchView(query) {
   try {
+    // reset currPage of App state
+    state.search.currPage = 1;
     // update search object
     state.search.query = query;
     const data = await getJson(`${apiURL}/?search=${query}`);
     // update search object
     state.search.result = data.data.recipes;
-    // pagination render
-    paginationView._checkStatePage();
+    // render pagination buttons
+    paginationView._render();
     // return result per page
-    return searchView._getResultPage(1);
+    return searchView._getResultPage();
   } catch (err) {
     throw err;
   }
 }
-// class View {
-//   #errorMessage;
-//   #parent;
-//   #data;
-
-//   constructor(errorMessage, parent) {
-//     this.#errorMessage = errorMessage;
-//     this.#parent = parent;
-//   }
-//   // render result
-//   _render(data) {
-//     // this.#data = data;
-//     //  console.log(this.#data);
-//     // const recipeStrEl = this.#createMarkap(this.#data);
-//     // clearContainer(this.#parentEl);
-//     // insertHTML(this.#parentEl, recipeStrEl);
-//   }
-//   get _get() {
-//     console.log(this.#errorMessage);
-//     return this;
-//   }
-//   _getP() {
-//     console.log(this.#parent);
-//   }
-//   _c(data) {
-//     this.#data = data;
-//     return this;
-//   }
-//   _getD() {
-//     return this.#data;
-//   }
-// }
-
-// class Two extends View {
-//   #errorMessage;
-//   constructor(errorMessage, parent) {
-//     super(errorMessage, parent);
-//   }
-// }
-
-// console.log(new Two('sasd', 'asd', 'ss')._c('asda'));

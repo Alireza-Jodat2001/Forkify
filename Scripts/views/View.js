@@ -38,4 +38,8 @@ export default class View {
   _getErrorMessage() {
     return this.#errorMessage;
   }
+
+  _getParentEl() {
+    return this.#parentEl;
+  }
 }
