@@ -66,7 +66,7 @@ class RecipeView extends View {
           <span class="recipe__info-data recipe__info-data--people">${servings}</span>
           <span class="recipe__info-text">servings</span>
           <div class="recipe__info-buttons">
-             <button class="btn--tiny btn--increase-servings">
+             <button class="btn--tiny btn--increase-servings btn--minus-servings">
                 <svg>
                 <use href="${icon}#icon-minus-circle"></use>
                 </svg>
