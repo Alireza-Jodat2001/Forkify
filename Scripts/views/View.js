@@ -42,4 +42,23 @@ export default class View {
   _getParentEl() {
     return this.#parentEl;
   }
+
+  // generate Markup ingredient
+  _createMarkupIngredient(ingredient) {
+    const { unit, quantity, description } = ingredient;
+    return `
+      <li class="recipe__ingredient">
+        <svg class="recipe__icon">
+          <use href="${icon}#icon-check"></use>
+        </svg>
+        <div class="recipe__quantity">${
+          quantity ? new Fraction(quantity) : ''
+        }</div>
+        <div class="recipe__description">
+          <span class="recipe__unit">${unit}</span>
+          ${description}
+        </div>
+      </li>
+    `;
+  }
 }

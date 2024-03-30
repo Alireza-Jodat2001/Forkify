@@ -19,8 +19,6 @@ async function showRecipes() {
     recipeView._renderSpinner();
     // send request with id on the window
     await model.sendRequest(id);
-    // updating recipe servings
-    updateServings(5);
     // render recipe
     recipeView._render(model.state.recipe);
   } catch (err) {
@@ -34,16 +32,3 @@ async function showRecipes() {
   recipeView._addHandlerEvent(showRecipes);
   searchView._addHandlerSearch();
 })();
-
-function updateServings(newServings) {
-  const { ingredients, servings: oldServings } = model.state.recipe;
-  // update quantity
-  ingredients.forEach(ingredient => {
-    ingredient.quantity = (ingredient.quantity * newServings) / oldServings;
-  });
-}
-
-document.querySelector('.recipe__info-buttons').addEventListener('click', e => {
-  const { target } = e;
-  console.log();
-});

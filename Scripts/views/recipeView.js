@@ -1,6 +1,7 @@
 import icon from 'url:../../Images/icons.svg';
 import { Fraction } from 'fractional';
 import View from './View.js';
+import { state } from '../model.js';
 
 class RecipeView extends View {
   #data;
@@ -12,9 +13,61 @@ class RecipeView extends View {
   // store data and call createMarkap function
   _render(data) {
     this.#data = data;
+    const id = window.location.hash.slice(1);
+    if (state.bookmarks.some(bookmark => bookmark.id === id))
+      state.recipe.bookmarked = true;
     const recipeStrEl = this._createMarkap(this.#data);
     this._clearContainer();
     this._insertHTML(recipeStrEl);
+    //  init event click btns
+    this._initBtnClick();
+  }
+
+  // re render Servings
+  _reRenderServings() {
+    const newRecipeMarkup = this._createMarkap(state.recipe);
+    const newDOM = document
+      .createRange()
+      .createContextualFragment(newRecipeMarkup);
+    const newRecipeEl = Array.from(newDOM.querySelectorAll('*'));
+    const currRecipeEl = Array.from(this._getParentEl().querySelectorAll('*'));
+    newRecipeEl.forEach((newEl, i) => {
+      const currEl = currRecipeEl[i];
+      //  compairation the Elements
+      if (!newEl.isEqualNode(currEl)) {
+        // changing the text content
+        if (currEl.firstChild?.nodeValue.trim() !== '')
+          currEl.textContent = newEl.textContent;
+        // changing the attribute
+        Array.from(newEl.attributes).forEach(attribute =>
+          currEl.setAttribute(attribute.name, attribute.value)
+        );
+      }
+    });
+  }
+
+  // event click handler bnts
+  _initBtnClick() {
+    document
+      .querySelector('.recipe__info-buttons')
+      .addEventListener('click', e => {
+        const oldServings = state.recipe.servings;
+        if (e.target.closest('.btn--minus-servings')) --state.recipe.servings;
+        else ++state.recipe.servings;
+        //  updating recipe servings
+        this._updateQuantity(oldServings, state.recipe.servings);
+        // re render Servings
+        this._reRenderServings();
+      });
+  }
+
+  // update quantity
+  _updateQuantity(oldServings, newServings) {
+    const { ingredients } = state.recipe;
+    ingredients.forEach(ingredient => {
+      ingredient.quantity = (ingredient.quantity * newServings) / oldServings;
+    });
+    state.recipe.servings = newServings;
   }
 
   // add handler event method
@@ -82,7 +135,9 @@ class RecipeView extends View {
           </div>
           <button class="btn--round">
           <svg class="">
-             <use href="${icon}#icon-bookmark-fill"></use>
+             <use href="${icon}#icon-bookmark${
+      state.recipe.bookmarked ? '-fill' : ''
+    }"></use>
           </svg>
           </button>
           </div>
@@ -111,25 +166,6 @@ class RecipeView extends View {
           </a>
        </div>
     `;
-  }
-
-  // create markup ingredient
-  _createMarkupIngredient(ingredient) {
-    const { unit, quantity, description } = ingredient;
-    return `
-         <li class="recipe__ingredient">
-            <svg class="recipe__icon">
-            <use href="${icon}#icon-check"></use>
-            </svg>
-            <div class="recipe__quantity">${
-              quantity ? new Fraction(quantity) : ''
-            }</div>
-            <div class="recipe__description">
-            <span class="recipe__unit">${unit}</span>
-            ${description}
-            </div>
-         </li>
-      `;
   }
 }
 
