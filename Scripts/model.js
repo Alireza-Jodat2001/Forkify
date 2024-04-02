@@ -24,8 +24,8 @@ export async function sendRequest(id) {
     // 2) update state object
     state.recipe = data.recipe;
   } catch (err) {
-    // throw err;
-    console.error(err);
+    throw err;
+    // console.error(err);
   }
 }
 

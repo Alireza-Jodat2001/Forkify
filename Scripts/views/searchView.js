@@ -17,11 +17,6 @@ class searchView extends View {
     return this._searchField.value;
   }
 
-  // clear search input
-  _clearInput() {
-    this._searchField.value = '';
-  }
-
   // add handler search method
   _addHandlerSearch() {
     this._formEl.addEventListener('submit', async e => {
@@ -37,8 +32,8 @@ class searchView extends View {
         const searchMarkups = this._generateMarkup(data);
         this._render(searchMarkups);
       } catch (err) {
-        console.error(err);
-        // this._renderError();
+        const errorMarkup = this._generateMarkupError();
+        this._render(errorMarkup);
       }
     });
   }
@@ -70,22 +65,6 @@ class searchView extends View {
       start = (page - 1) * RESAULT_PER_PAGE,
       end = page * RESAULT_PER_PAGE;
     return allResult.slice(start, end);
-  }
-
-  // render error
-  _renderError() {
-    const markup = `
-      <div class="error">
-        <div>
-          <svg>
-            <use href="${icon}#icon-alert-triangle"></use>
-          </svg>
-        </div>
-        <p>${this._getErrorMessage()}</p>
-      </div>
-    `;
-    this._clearContainer();
-    this._insertHTML(markup);
   }
 }
 

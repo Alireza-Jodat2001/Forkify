@@ -22,12 +22,17 @@ class bookmarkView extends View {
         state.bookmarks.push(state.recipe);
       }
       // 3) remove duplicate elements
-      const setBookmarks = new Set(state.bookmarks);
+      const setBookmarks = [...new Set(state.bookmarks)];
       // 4) update bookmark button
-      recipeView._reRenderServings();
+      recipeView._update(state.recipe);
       // 5) render bookmark
-      const markupPreview = searchView._generateMarkup([...setBookmarks]);
-      this._render(markupPreview);
+      if (setBookmarks.length) {
+        const markupPreview = searchView._generateMarkup(setBookmarks);
+        this._render(markupPreview);
+      } else {
+        const errorMarkup = this._generateMarkupError('smile');
+        this._render(errorMarkup);
+      }
     });
   }
 }

@@ -18,8 +18,8 @@ export async function getJson(url) {
     if (!res.ok) throw new Error(`Could not found food. (${res.status})`);
     return await res.json();
   } catch (err) {
-    // throw err;
-    console.error(err);
+    throw err;
+    // console.error(err);
   }
 }
 

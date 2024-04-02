@@ -14,6 +14,41 @@ export default class View {
     this._insertHTML(markup, parentEl);
   }
 
+  // render error method
+  _generateMarkupError(errIcon = 'alert-triangle') {
+    return `
+      <div class="error">
+        <div>
+          <svg>
+            <use href="${icon}#icon-${errIcon}"></use>
+          </svg>
+        </div>
+        <p>${this._errorMessage}</p>
+      </div>
+    `;
+  }
+
+  // update method
+  _update(newState) {
+    const newMarkup = this._generateMarkup(newState);
+    const newDOM = document.createRange().createContextualFragment(newMarkup);
+    const newEl = Array.from(newDOM.querySelectorAll('*'));
+    const currEl = Array.from(this._parentEl.querySelectorAll('*'));
+    newEl.forEach((newEl, i) => {
+      const currentEl = currEl[i];
+      //  compairation the Elements
+      if (!newEl.isEqualNode(currentEl)) {
+        // changing the text content
+        if (currentEl.firstChild?.nodeValue.trim() !== '')
+          currentEl.textContent = newEl.textContent;
+        // changing the attribute
+        Array.from(newEl.attributes).forEach(attribute =>
+          currentEl.setAttribute(attribute.name, attribute.value)
+        );
+      }
+    });
+  }
+
   // clear container
   _clearContainer(parentEl) {
     parentEl.innerHTML = '';
@@ -22,24 +57,5 @@ export default class View {
   // insert HTML function
   _insertHTML(markup, parentEl) {
     parentEl.insertAdjacentHTML('afterbegin', markup);
-  }
-
-  // generate Markup ingredient
-  _createMarkupIngredient(ingredient) {
-    const { unit, quantity, description } = ingredient;
-    return `
-      <li class="recipe__ingredient">
-        <svg class="recipe__icon">
-          <use href="${icon}#icon-check"></use>
-        </svg>
-        <div class="recipe__quantity">${
-          quantity ? new Fraction(quantity) : ''
-        }</div>
-        <div class="recipe__description">
-          <span class="recipe__unit">${unit}</span>
-          ${description}
-        </div>
-      </li>
-    `;
   }
 }

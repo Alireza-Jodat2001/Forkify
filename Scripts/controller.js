@@ -31,8 +31,9 @@ async function showRecipes() {
     const recipeMarkup = recipeView._generateMarkup(model.state.recipe);
     recipeView._render(recipeMarkup);
   } catch (err) {
-    recipeView._renderError();
-    console.error(err);
+    const errorMarkup = recipeView._generateMarkupError();
+    recipeView._render(errorMarkup);
+    // console.error(err);
   }
 }
 

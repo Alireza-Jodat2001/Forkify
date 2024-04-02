@@ -9,29 +9,6 @@ class RecipeView extends View {
     super(_parentEl, _errorMessage);
   }
 
-  // re render Servings
-  _reRenderServings() {
-    const newRecipeMarkup = this._generateMarkup(state.recipe);
-    const newDOM = document
-      .createRange()
-      .createContextualFragment(newRecipeMarkup);
-    const newRecipeEl = Array.from(newDOM.querySelectorAll('*'));
-    const currRecipeEl = Array.from(this._parentEl.querySelectorAll('*'));
-    newRecipeEl.forEach((newEl, i) => {
-      const currEl = currRecipeEl[i];
-      //  compairation the Elements
-      if (!newEl.isEqualNode(currEl)) {
-        // changing the text content
-        if (currEl.firstChild?.nodeValue.trim() !== '')
-          currEl.textContent = newEl.textContent;
-        // changing the attribute
-        Array.from(newEl.attributes).forEach(attribute =>
-          currEl.setAttribute(attribute.name, attribute.value)
-        );
-      }
-    });
-  }
-
   // update quantity
   _updateQuantity(oldServings, newServings) {
     const { ingredients } = state.recipe;
@@ -50,33 +27,18 @@ class RecipeView extends View {
     // onClick
     this._parentEl.addEventListener('click', e => {
       const oldServings = state.recipe.servings;
-      // 1) updating servings
+      // 1) checking target and updating servings
       if (e.target.closest('.btn--minus-servings')) {
         if (oldServings === 1) return;
         --state.recipe.servings;
       } else if (e.target.closest('.btn--increase-servings'))
         ++state.recipe.servings;
+      else return;
       // 2)  updating recipe servings
       this._updateQuantity(oldServings, state.recipe.servings);
       // 3) re render Servings
-      this._reRenderServings();
+      this._update(state.recipe);
     });
-  }
-
-  // render error method
-  _renderError() {
-    const markup = `
-      <div class="error">
-        <div>
-          <svg>
-            <use href="${icon}#icon-alert-triangle"></use>
-          </svg>
-        </div>
-        <p>${this._errorMessage}</p>
-      </div>
-   `;
-    // this._clearContainer();
-    // this._insertHTML(markup);
   }
 
   // create recipe element
@@ -151,6 +113,25 @@ class RecipeView extends View {
           </svg>
           </a>
        </div>
+    `;
+  }
+
+  // generate Markup ingredient
+  _createMarkupIngredient(ingredient) {
+    const { unit, quantity, description } = ingredient;
+    return `
+      <li class="recipe__ingredient">
+        <svg class="recipe__icon">
+          <use href="${icon}#icon-check"></use>
+        </svg>
+        <div class="recipe__quantity">${
+          quantity ? new Fraction(quantity) : ''
+        }</div>
+        <div class="recipe__description">
+          <span class="recipe__unit">${unit}</span>
+          ${description}
+        </div>
+      </li>
     `;
   }
 }
