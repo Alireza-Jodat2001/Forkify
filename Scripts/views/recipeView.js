@@ -2,35 +2,21 @@ import icon from 'url:../../Images/icons.svg';
 import { Fraction } from 'fractional';
 import View from './View.js';
 import { state } from '../model.js';
+import { getWindowHash } from '../helpers.js';
 
 class RecipeView extends View {
-  #data;
-
-  constructor(parentEl, errorMessage) {
-    super(parentEl, errorMessage);
-  }
-
-  // store data and call createMarkap function
-  _render(data) {
-    this.#data = data;
-    const id = window.location.hash.slice(1);
-    if (state.bookmarks.some(bookmark => bookmark.id === id))
-      state.recipe.bookmarked = true;
-    const recipeStrEl = this._createMarkap(this.#data);
-    this._clearContainer();
-    this._insertHTML(recipeStrEl);
-    //  init event click btns
-    this._initBtnClick();
+  constructor(_parentEl, _errorMessage) {
+    super(_parentEl, _errorMessage);
   }
 
   // re render Servings
   _reRenderServings() {
-    const newRecipeMarkup = this._createMarkap(state.recipe);
+    const newRecipeMarkup = this._generateMarkup(state.recipe);
     const newDOM = document
       .createRange()
       .createContextualFragment(newRecipeMarkup);
     const newRecipeEl = Array.from(newDOM.querySelectorAll('*'));
-    const currRecipeEl = Array.from(this._getParentEl().querySelectorAll('*'));
+    const currRecipeEl = Array.from(this._parentEl.querySelectorAll('*'));
     newRecipeEl.forEach((newEl, i) => {
       const currEl = currRecipeEl[i];
       //  compairation the Elements
@@ -46,21 +32,6 @@ class RecipeView extends View {
     });
   }
 
-  // event click handler bnts
-  _initBtnClick() {
-    document
-      .querySelector('.recipe__info-buttons')
-      .addEventListener('click', e => {
-        const oldServings = state.recipe.servings;
-        if (e.target.closest('.btn--minus-servings')) --state.recipe.servings;
-        else ++state.recipe.servings;
-        //  updating recipe servings
-        this._updateQuantity(oldServings, state.recipe.servings);
-        // re render Servings
-        this._reRenderServings();
-      });
-  }
-
   // update quantity
   _updateQuantity(oldServings, newServings) {
     const { ingredients } = state.recipe;
@@ -72,34 +43,49 @@ class RecipeView extends View {
 
   // add handler event method
   _addHandlerEvent(showRecipes) {
+    // onLoad and onHashChange
     ['load', 'hashchange'].forEach(typeEevent =>
       window.addEventListener(typeEevent, showRecipes)
     );
+    // onClick
+    this._parentEl.addEventListener('click', e => {
+      const oldServings = state.recipe.servings;
+      // 1) updating servings
+      if (e.target.closest('.btn--minus-servings')) {
+        if (oldServings === 1) return;
+        --state.recipe.servings;
+      } else if (e.target.closest('.btn--increase-servings'))
+        ++state.recipe.servings;
+      // 2)  updating recipe servings
+      this._updateQuantity(oldServings, state.recipe.servings);
+      // 3) re render Servings
+      this._reRenderServings();
+    });
   }
 
   // render error method
   _renderError() {
     const markup = `
-         <div class="error">
-            <div>
-               <svg>
-                  <use href="${icon}#icon-alert-triangle"></use>
-               </svg>
-            </div>
-            <p>${this._getErrorMessage()}</p>
-         </div>
+      <div class="error">
+        <div>
+          <svg>
+            <use href="${icon}#icon-alert-triangle"></use>
+          </svg>
+        </div>
+        <p>${this._errorMessage}</p>
+      </div>
    `;
-    this._clearContainer();
-    this._insertHTML(markup);
+    // this._clearContainer();
+    // this._insertHTML(markup);
   }
 
   // create recipe element
-  _createMarkap(recipe) {
+  _generateMarkup(recipe) {
     // prettier-ignore
-    const { title, sourceUrl, servings, publisher, ingredients, image, id, cookingTime } = recipe;
+    const { title, source_url, servings, publisher, ingredients, image_url,  cooking_time } = recipe;
     return `
        <figure class="recipe__fig">
-          <img src="${image}" alt="${title}" class="recipe__img" />
+          <img src="${image_url}" alt="${title}" class="recipe__img" />
           <h1 class="recipe__title">
           <span>${title}</span>
           </h1>
@@ -109,7 +95,7 @@ class RecipeView extends View {
           <svg class="recipe__info-icon">
              <use href="${icon}#icon-clock"></use>
           </svg>
-          <span class="recipe__info-data recipe__info-data--minutes">${cookingTime}</span>
+          <span class="recipe__info-data recipe__info-data--minutes">${cooking_time}</span>
           <span class="recipe__info-text">minutes</span>
           </div>
           <div class="recipe__info">
@@ -156,7 +142,7 @@ class RecipeView extends View {
                   </p>
                   <a
                   class="btn--small recipe__btn"
-                  href="${sourceUrl}"
+                  href="${source_url}"
                   target="_blank"
           >
           <span>Directions</span>

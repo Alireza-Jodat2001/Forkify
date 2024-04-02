@@ -1,39 +1,38 @@
-import { resultPerPage } from '../config';
+import { RESAULT_PER_PAGE } from '../config';
 import { state } from '../model';
 import icon from 'url:../../Images/icons.svg';
 import View from './View.js';
 import searchView from './searchView';
 
 class paginationView extends View {
-  constructor(parentEl) {
-    super(parentEl);
-    // set click event for pagination button
-    this._addEventHandler();
+  constructor(_parentEl) {
+    super(_parentEl);
   }
+
   // event handler
   _addEventHandler() {
-    this._getParentEl().addEventListener('click', e => {
+    this._parentEl.addEventListener('click', e => {
       const { target } = e;
+      // 1) checking target
       if (!target.closest('.btn--inline')) return;
+      // 2) update current page
       if (target.closest('.pagination__btn--next')) ++state.search.currPage;
       else --state.search.currPage;
-      // render pagination btn
-      this._render();
-      // render next or prev page
+      // 3) render pagination btn
+      const paginationMarkupBtn = this._generateMarkup();
+      this._render(paginationMarkupBtn);
+      // 4) get result next or prev page
       const data = searchView._getResultPage(state.search.currPage);
-      searchView._render(data);
+      // 5) render next or prev page
+      const searchMarkups = searchView._generateMarkup(data);
+      searchView._render(searchMarkups);
     });
   }
-  // render pagination btn
-  _render() {
-    this._clearContainer();
-    const markup = this._generateMarkupBtn();
-    this._insertHTML(markup);
-  }
+
   // generate markup
-  _generateMarkupBtn() {
-    const allPages = Math.ceil(state.search.result.length / resultPerPage),
-      currPage = state.search.currPage;
+  _generateMarkup() {
+    const allPages = Math.ceil(state.search.result.length / RESAULT_PER_PAGE);
+    const currPage = state.search.currPage;
     // first page
     if (currPage === 1 && currPage < allPages) {
       return `

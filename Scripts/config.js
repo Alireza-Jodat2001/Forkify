@@ -1,8 +1,8 @@
 // API URL
-export const apiURL = `https://forkify-api.herokuapp.com/api/v2/recipes`;
+export const API_URL = `https://forkify-api.herokuapp.com/api/v2/recipes`;
 
 // timeout second
-export const timeoutSecond = 10;
+export const TIMEOUT_SECONDE = 10;
 
 // number of result per page
-export const resultPerPage = 10;
+export const RESAULT_PER_PAGE = 10;
